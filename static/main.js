@@ -42,7 +42,7 @@ let selectedVideoId = 1;
 let baseURL = ''; //https://www.hurdl.us';
 
 const originalVid = document.getElementById('original-video');
-const footPlacementVid = document.getElementById('foot-placement-vid');
+const $footPlacementContainer = $('#foot-placement-gif-container');
 const blobPlacementVid = document.getElementById('blob-placement-vid');
 const loadCards = () => {
     const currentSelectedVideoId = selectedVideoId;
@@ -52,8 +52,9 @@ const loadCards = () => {
     });
 
     let footPlacementVidPromise = new Promise((resolve, reject) => {
-        footPlacementVid.addEventListener('canplaythrough', () => resolve(() => footPlacementVid.play()));
-        footPlacementVid.src = `${baseURL}/static/media/${selectedVideoId}/foot_placement/video.mp4`;
+        const img = new Image();
+        img.addEventListener('load', () => resolve(() => $footPlacementContainer.html(img)));
+        img.src = `${baseURL}/static/media/${selectedVideoId}/foot_placement/video.gif`;
     });
 
     let blobPlacementVidPromise = new Promise((resolve, reject) => {
@@ -67,6 +68,13 @@ const loadCards = () => {
     $('#stat-speed').text(stat.speed ? stat.speed + ' ft/s' : '-');
     $('#stat-jump-margin').text(stat.jumpMargin ? (stat.jumpMargin > 0 ? stat.jumpMargin + '" before line' : (-1 * stat.jumpMargin) + '" after line') : '-');
     $('#stat-land-margin').text(stat.landMargin ? (stat.landMargin > 0 ? stat.landMargin + '" before line' : (-1 * stat.landMargin) + '" after line') : '-');
+    if (selectedVideoId <= 3) {
+        $('#line-detection').attr('src', '/static/lines' + selectedVideoId + '.png');
+        $('#line-detection').show();
+    } else {
+        $('#line-detection').hide();
+    }
+
 
     Promise.all([originalVideoPromise, footPlacementVidPromise, blobPlacementVidPromise]).then(cbs => {
         cbs.forEach(cb => cb());
